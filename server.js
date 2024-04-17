@@ -5,9 +5,11 @@ const Jimp = require("jimp");
 const uuid = require("uuid");
 const path = require("path");
 
+// const renombrar = uuid.v4();
 //levantar el servidor en el puerto 3000
-app.listen(3000, () => {
-  console.log("Servidor corriendo en el puerto 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor Express iniciado en el puerto ${PORT}`);
 });
 //creando carpeta pública
 app.use("/front", express.static(__dirname + "/public"));
@@ -17,62 +19,60 @@ app.get("/", (req, res) => {
 });
 app.get("/cargar", async (req, res) => {
   //capturar la url de la imagen
-  const url = req.query;
-  console.log(url);
+  const { imagen_url } = req.query;
+  console.log(req.query);
+  try {
+    const imagenCapturada = `img${uuid.v4().slice(0, 6)}.jpg`; //renombramos la imagen con UUID
+    const imagen = await Jimp.read(imagen_url)
 
-  const imagenCapturada = "captura.jpg"; //procesamiento de la imagen
-  console.log(imagenCapturada);
-
-  const data = fs.readFileSync(url);
-  // console.log("Valor de data: ", data);
-
-  // calcular el tamaño de la imagen en varias unidades
-  const fileSizeBytes = data.length; // tamaño del archivo en bytes
-  const fileSizeKB = fileSizeBytes / 1024; // Convertir bytes a kilobytes
-  const fileSizeMB = fileSizeKB / 1024; // Convertir kilobytes a megabytes
-  console.log("Tamaño del archivo en bytes:", fileSizeBytes);
-  console.log("Tamaño del archivo en KB:", fileSizeKB.toFixed(2));
-  console.log("Tamaño del archivo en MB:", fileSizeMB.toFixed(2));
-
-  // obtener extension del archivo enviado como parametro
-  const extension = path.extname("imagen_url");
-  console.log("Extensión del archivo:", extension);
-
-  // validar para evitar procesar imagenes de mas de 10mb
-
-  if (fileSizeMB > 5.0) {
-    console.log(chalk.white.bgRed.bold("Archivo excede el limite 5MB"));
-    res.send({ error: "No puede procesarse imagen excede el limite 5mb" });
-  } else {
-    if (extensionesPermitidas.includes(extension)) {
-      // imagen puede ser procesada por tamaño y extension
-      const IMG = await Jimp.read(object.imagen_url);
-      await IMG.resize(350, Jimp.AUTO).greyscale().writeAsync(imagenCapturada);
-      res.sendFile(__dirname + "/" + imagenCapturada);
-    } else {
-      console.log(
-        chalk.white.bgRed.bold(
-          "Extension " +
-            extension +
-            " no soportada, solo: " +
-            extensionesPermitidas.join(" - ")
-        )
-      );
-      res.send({
-        error: "No puede procesarse imagen excede el limite 5mb",
-        extensiones: extensionesPermitidas,
-      });
-    }
+    await imagen 
+    .grayscale()
+    .writeAsync(`${imagenCapturada}`)
+    
+    res.sendFile(__dirname + "/" + imagenCapturada);
+  } catch (error) {
+    console.log('Mensaje de error: ', error);
   }
 });
+//   const data = fs.readFileSync(url);
+//   // console.log("Valor de data: ", data);
 
+//   // calcular el tamaño de la imagen en varias unidades
+//   const fileSizeBytes = data.length; // tamaño del archivo en bytes
+//   const fileSizeKB = fileSizeBytes / 1024; // Convertir bytes a kilobytes
+//   const fileSizeMB = fileSizeKB / 1024; // Convertir kilobytes a megabytes
+//   console.log("Tamaño del archivo en bytes:", fileSizeBytes);
+//   console.log("Tamaño del archivo en KB:", fileSizeKB.toFixed(2));
+//   console.log("Tamaño del archivo en MB:", fileSizeMB.toFixed(2));
+//   // obtener extension del archivo enviado como parametro
+//   const extension = path.extname("imagen_url");
+//   console.log("Extensión del archivo:", extension);
 
+//   // validar para evitar procesar imagenes de mas de 10mb
 
-// Paso 0 Cargar el index.html desde el servidor
-
-//  const nombre = uuid.v4();
-// console.log("Codigo UUID: ", identificador)
-//     parcial = identificador.slice(identificador.length - 6)
-//     console.log(identificador.length)
-//     console.log("Últimos 6 digitos del UUID: ", parcial)
+//   if (fileSizeMB > 5.0) {
+//     console.log(chalk.white.bgRed.bold("Archivo excede el limite 5MB"));
+//     res.send({ error: "No puede procesarse imagen excede el limite 5mb" });
+//   } else {
+//     if (extensionesPermitidas.includes(extension)) {
+//       // imagen puede ser procesada por tamaño y extension
+//       const IMG = await Jimp.read(imagenCapturada);
+//       await IMG.resize(350, Jimp.AUTO).greyscale().writeAsync(imagenCapturada);
+//       res.sendFile(__dirname + "/" + imagenCapturada);
+//     } else {
+//       console.log(
+//         chalk.white.bgRed.bold(
+//           "Extension " +
+//             extension +
+//             " no soportada, solo: " +
+//             extensionesPermitidas.join(" - ")
+//         )
+//       );
+//       res.send({
+//         error: "No puede procesarse imagen excede el limite 5mb",
+//         extensiones: extensionesPermitidas,
+//       });
+//     }
+//   }
+// });
 
