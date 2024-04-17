@@ -22,12 +22,12 @@ app.get("/cargar", async (req, res) => {
   const { imagen_url } = req.query;
   console.log(req.query);
 
-//Para verificar si la URL termine en .jpg o .png
-const validarExtension = /\.(jpg|png)$/;
+//Para verificar si la URL esta vacía o termine en .jpg o .png
+const validarExtension = /\.(jpg|png|gif)$/i;
 
-//Verificamos:
+//Verificamos si la extension es .jpg o .png:
 if (!validarExtension.test(imagen_url)) {
-  res.status(400).send("La URL no termina en.jpg o.png. Intenta de nuevo");
+  res.status(400).send("La URL está vacía o no termina en.jpg o.png. Intenta de nuevo");
   return;
 }
 
@@ -46,6 +46,7 @@ if (!validarExtension.test(imagen_url)) {
   } catch (error) {
     console.log('Mensaje de error: ', error);
   }
+
 });
 
 //Probar con esta url: https://en.meming.world/images/en/3/3f/This_Is_Fine.jpg
