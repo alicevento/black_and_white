@@ -9,6 +9,8 @@ const path = require("path");
 app.listen(3000, () => {
   console.log("Servidor corriendo en el puerto 3000");
 });
+//creando carpeta pública
+app.use("/front", express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
@@ -64,8 +66,7 @@ app.get("/cargar", async (req, res) => {
   }
 });
 
-//middlewares
-app.use("/front", express.static(__dirname + "/public"));
+
 
 // Paso 0 Cargar el index.html desde el servidor
 
@@ -75,50 +76,3 @@ app.use("/front", express.static(__dirname + "/public"));
 //     console.log(identificador.length)
 //     console.log("Últimos 6 digitos del UUID: ", parcial)
 
-// probaremos con una imagen en la ruta raiz del proyecto
-app.get("/load", async (req, res) => {
-  const { imagen } = req.query; // capturo el nombre de archivo desde la url
-  const nombreDeLaImagen = `salida.jpg`; // nombre del resultado del procesamiento
-  // leer el archivo que esta en la carpeta raiz
-  const data = fs.readFileSync(imagen);
-  //console.log("Valor de data: ", data);
-
-  // calcular el tamaño de la imagen en varias unidades
-  const fileSizeBytes = data.length; // tamaño del archivo en bytes
-  const fileSizeKB = fileSizeBytes / 1024; // Convertir bytes a kilobytes
-  const fileSizeMB = fileSizeKB / 1024; // Convertir kilobytes a megabytes
-  console.log("Tamaño del archivo en bytes:", fileSizeBytes);
-  console.log("Tamaño del archivo en KB:", fileSizeKB.toFixed(2));
-  console.log("Tamaño del archivo en MB:", fileSizeMB.toFixed(2));
-
-  // obtener extension del archivo enviado como parametro
-  const extension = path.extname(imagen);
-  console.log("Extensión del archivo:", extension);
-
-  // validar para evitar procesar imagenes de mas de 10mb
-
-  if (fileSizeMB > 5.0) {
-    console.log(chalk.white.bgRed.bold("Archivo excede el limite 5MB"));
-    res.send({ error: "No puede procesarse imagen excede el limite 5mb" });
-  } else {
-    if (extensionesPermitidas.includes(extension)) {
-      // imagen puede ser procesada por tamaño y extension
-      const IMG = await Jimp.read(imagen);
-      await IMG.resize(350, Jimp.AUTO).greyscale().writeAsync(nombreDeLaImagen);
-      res.sendFile(__dirname + "/" + nombreDeLaImagen);
-    } else {
-      console.log(
-        chalk.white.bgRed.bold(
-          "Extension " +
-            extension +
-            " no soportada, solo: " +
-            extensionesPermitidas.join(" - ")
-        )
-      );
-      res.send({
-        error: "No puede procesarse imagen excede el limite 5mb",
-        extensiones: extensionesPermitidas,
-      });
-    }
-  }
-});
