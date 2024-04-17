@@ -11,11 +11,11 @@ app.listen(3000, () => {
   });
 
 //middlewares
-app.use("/css", express.static(__dirname + "/public/assets/css"));
+app.use("/front", express.static(__dirname + "/public"));
 
 // Paso 0 Cargar el index.html desde el servidor
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.sendFile(__dirname + "/public/index.html");
 });
 
  app.get("/cargar", async (req, res) => {
