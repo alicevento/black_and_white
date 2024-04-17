@@ -21,11 +21,24 @@ app.get("/cargar", async (req, res) => {
   //capturar la url de la imagen
   const { imagen_url } = req.query;
   console.log(req.query);
+
+//Para verificar si la URL termine en .jpg o .png
+const validarExtension = /\.(jpg|png)$/;
+
+//Verificamos:
+if (!validarExtension.test(imagen_url)) {
+  res.status(400).send("La URL no termina en.jpg o.png. Intenta de nuevo");
+  return;
+}
+
+//Capturamos la imagen
+
   try {
     const imagenCapturada = `img${uuid.v4().slice(0, 6)}.jpg`; //renombramos la imagen con UUID
     const imagen = await Jimp.read(imagen_url)
 
     await imagen 
+    .resize(350, Jimp.AUTO)
     .grayscale()
     .writeAsync(`${imagenCapturada}`)
     
@@ -34,6 +47,14 @@ app.get("/cargar", async (req, res) => {
     console.log('Mensaje de error: ', error);
   }
 });
+
+//Probar con esta url: https://en.meming.world/images/en/3/3f/This_Is_Fine.jpg
+//URL que no tiene jpg o png: https://getbootstrap.com/docs/5.3/getting-started/introduction/
+
+
+
+
+
 //   const data = fs.readFileSync(url);
 //   // console.log("Valor de data: ", data);
 
