@@ -27,8 +27,13 @@ const validarExtension = /\.(jpg|png|gif)$/i;
 
 //Verificamos si la extension es .jpg o .png:
 if (!validarExtension.test(imagen_url)) {
-  res.status(400).send("La URL está vacía o no termina en.jpg o.png. Intenta de nuevo");
+    // if (imagen_url.startsWith("http")) {
+  res.status(400).send("La URL está vacía o no termina en.jpg, .png o .gif. Intenta de nuevo");
   return;
+    // } else {
+    //     res.status(400).send("El archivo no se encontró en la ruta raíz");
+    //     return;
+    // }
 }
 
 //Capturamos la imagen
